@@ -2,6 +2,7 @@ package fr.kata.sg_bank_account.service;
 
 import fr.kata.sg_bank_account.exception.AccountNotFoundException;
 import fr.kata.sg_bank_account.exception.DepositFailedException;
+import fr.kata.sg_bank_account.exception.NotEnoughBalanceException;
 import fr.kata.sg_bank_account.model.User;
 
 public class OperationServiceImpl implements OperationService {
@@ -27,9 +28,13 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    public void withdraw(User user, double amount) throws AccountNotFoundException {
+    public void withdraw(User user, double amount) throws AccountNotFoundException, NotEnoughBalanceException {
         var account = accountService.getAccountByUser(user.getId());
-        account.setAmount(account.getAmount() - amount);
-        accountService.saveAccount(account);
+        if (account.getAmount() >= amount) {
+            account.setAmount(account.getAmount() - amount);
+            accountService.saveAccount(account);
+        } else {
+            throw new NotEnoughBalanceException("Withdrawal failed because not enough balance for user: " + user.getId());
+        }
     }
 }

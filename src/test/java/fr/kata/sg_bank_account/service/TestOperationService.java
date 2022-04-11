@@ -2,6 +2,7 @@ package fr.kata.sg_bank_account.service;
 
 import fr.kata.sg_bank_account.exception.AccountNotFoundException;
 import fr.kata.sg_bank_account.exception.DepositFailedException;
+import fr.kata.sg_bank_account.exception.NotEnoughBalanceException;
 import fr.kata.sg_bank_account.model.Account;
 import fr.kata.sg_bank_account.model.User;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class TestOperationService {
+class TestOperationService {
     @Mock
     private AccountServiceImpl accountService;
     @Spy
@@ -49,13 +50,11 @@ public class TestOperationService {
     @Test
     void should_deposit_fail_when_user_has_no_account() throws AccountNotFoundException {
         when(accountService.getAccountByUser(any(UUID.class))).thenThrow(AccountNotFoundException.class);
-        assertThrows(DepositFailedException.class, () -> {
-            operationService.deposit(new User(UUID.randomUUID(), "John Doe"), 10);
-        });
+        assertThrows(DepositFailedException.class, () -> operationService.deposit(new User(UUID.randomUUID(), "John Doe"), 10));
     }
 
     @Test
-    void should_withdraw_successfully() throws AccountNotFoundException {
+    void should_withdraw_successfully() throws AccountNotFoundException, NotEnoughBalanceException {
         var userId = UUID.randomUUID();
         User user = new User(userId, "John Doe");
         var account = new Account(UUID.randomUUID(), user, 40);
@@ -67,5 +66,15 @@ public class TestOperationService {
         var accountCaptor = ArgumentCaptor.forClass(Account.class);
         verify(accountService, times(1)).saveAccount(accountCaptor.capture());
         assertEquals(15, accountCaptor.getValue().getAmount());
+    }
+
+    @Test
+    void should_withdraw_fail_when_not_enough_balance() throws AccountNotFoundException {
+        var userId = UUID.randomUUID();
+        User user = new User(userId, "John Doe");
+        var account = new Account(UUID.randomUUID(), user, 7);
+        when(accountService.getAccountByUser(userId)).thenReturn(account);
+
+        assertThrows(NotEnoughBalanceException.class, () -> operationService.withdraw(user, 20));
     }
 }
