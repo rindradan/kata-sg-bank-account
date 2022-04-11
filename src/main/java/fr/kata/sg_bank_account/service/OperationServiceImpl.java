@@ -1,16 +1,22 @@
 package fr.kata.sg_bank_account.service;
 
 import fr.kata.sg_bank_account.exception.*;
+import fr.kata.sg_bank_account.model.AccountTransaction;
+import fr.kata.sg_bank_account.model.TransactionType;
 import fr.kata.sg_bank_account.model.User;
+
+import java.util.Date;
 
 public class OperationServiceImpl implements OperationService {
 
     private static final double WITHDRAWAL_THRESHOLD_AMOUNT = 10;
     private static final double WITHDRAWAL_NEGATIVE_AMOUNT = 0;
     private final AccountService accountService;
+    private final AccountTransactionService accountTransactionService;
 
-    public OperationServiceImpl(AccountService accountService) {
+    public OperationServiceImpl(AccountService accountService, AccountTransactionService accountTransactionService) {
         this.accountService = accountService;
+        this.accountTransactionService = accountTransactionService;
     }
 
     @Override
@@ -22,6 +28,9 @@ public class OperationServiceImpl implements OperationService {
             var account = accountService.getAccountByUserId(user.getId());
             account.setBalance(account.getBalance() + amount);
             accountService.saveAccount(account);
+
+            var accountTransaction = new AccountTransaction(new Date(), amount, TransactionType.DEPOSIT, account);
+            accountTransactionService.createAccountTransaction(accountTransaction);
         } catch (AccountNotFoundException e) {
             throw new DepositFailedException("Deposit failed because User: "+ user.getId() +" has no account!", e);
         }
@@ -40,6 +49,9 @@ public class OperationServiceImpl implements OperationService {
             if (account.getBalance() >= amount) {
                 account.setBalance(account.getBalance() - amount);
                 accountService.saveAccount(account);
+
+                var accountTransaction = new AccountTransaction(new Date(), amount, TransactionType.WITHDRAWAL, account);
+                accountTransactionService.createAccountTransaction(accountTransaction);
             } else {
                 throw new WithdrawalNotEnoughBalanceException("Withdrawal failed because not enough balance for user: " + user.getId());
             }

@@ -2,6 +2,8 @@ package fr.kata.sg_bank_account.service;
 
 import fr.kata.sg_bank_account.exception.*;
 import fr.kata.sg_bank_account.model.Account;
+import fr.kata.sg_bank_account.model.AccountTransaction;
+import fr.kata.sg_bank_account.model.TransactionType;
 import fr.kata.sg_bank_account.model.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +23,8 @@ import static org.mockito.Mockito.*;
 class TestOperationService {
     @Mock
     private AccountServiceImpl accountService;
+    @Mock
+    private AccountTransactionServiceImpl accountTransactionService;
     @Spy
     @InjectMocks
     private OperationServiceImpl operationService;
@@ -38,6 +42,12 @@ class TestOperationService {
         var accountCaptor = ArgumentCaptor.forClass(Account.class);
         verify(accountService, times(1)).saveAccount(accountCaptor.capture());
         assertEquals(50, accountCaptor.getValue().getBalance());
+
+        var transactionCaptor = ArgumentCaptor.forClass(AccountTransaction.class);
+        verify(accountTransactionService, times(1)).createAccountTransaction(transactionCaptor.capture());
+        assertEquals(40, transactionCaptor.getValue().getAmount());
+        assertEquals(TransactionType.DEPOSIT, transactionCaptor.getValue().getTransactionType());
+        assertEquals(account, transactionCaptor.getValue().getAccount());
     }
 
     @Test
@@ -64,6 +74,12 @@ class TestOperationService {
         var accountCaptor = ArgumentCaptor.forClass(Account.class);
         verify(accountService, times(1)).saveAccount(accountCaptor.capture());
         assertEquals(15, accountCaptor.getValue().getBalance());
+
+        var transactionCaptor = ArgumentCaptor.forClass(AccountTransaction.class);
+        verify(accountTransactionService, times(1)).createAccountTransaction(transactionCaptor.capture());
+        assertEquals(25, transactionCaptor.getValue().getAmount());
+        assertEquals(TransactionType.WITHDRAWAL, transactionCaptor.getValue().getTransactionType());
+        assertEquals(account, transactionCaptor.getValue().getAccount());
     }
 
     @Test
