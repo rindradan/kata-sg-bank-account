@@ -25,7 +25,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void saveAccount(Account account) {
+    public Account saveAccount(Account account) {
         accountMap.put(account.getUser().getId(), account);
+        return accountMap.get(account.getUser().getId());
     }
 }
