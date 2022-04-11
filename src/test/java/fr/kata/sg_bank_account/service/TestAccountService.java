@@ -16,15 +16,15 @@ class TestAccountService {
         accountService.getAccountMap().putAll(TestAccountServiceData.generateAccounts());
 
         var userId = UUID.fromString("dd8d795c-b980-11ec-8422-0242ac120002");
-        var account = accountService.getAccountByUser(userId);
+        var account = accountService.getAccountByUserId(userId);
         assertEquals(UUID.fromString("90cc9ce0-b9a0-11ec-8422-0242ac120002"), account.getId());
         assertEquals(userId, account.getUser().getId());
-        assertEquals(10, account.getAmount());
+        assertEquals(10, account.getBalance());
     }
 
     @Test
     void should_fail_when_account_not_found() {
-        assertThrows(AccountNotFoundException.class, () -> new AccountServiceImpl().getAccountByUser(UUID.randomUUID()));
+        assertThrows(AccountNotFoundException.class, () -> new AccountServiceImpl().getAccountByUserId(UUID.randomUUID()));
     }
 
     @Test
@@ -36,12 +36,12 @@ class TestAccountService {
         var account = TestAccountServiceData.generateAccount();
         assertEquals(UUID.fromString("90cc9ce0-b9a0-11ec-8422-0242ac120002"), account.getId());
         assertEquals(userId, account.getUser().getId());
-        assertEquals(10, account.getAmount());
+        assertEquals(10, account.getBalance());
 
-        account.setAmount(50);
+        account.setBalance(50);
         Account savedAccount = accountService.saveAccount(account);
 
-        assertEquals(50, savedAccount.getAmount());
+        assertEquals(50, savedAccount.getBalance());
     }
 
     @Test

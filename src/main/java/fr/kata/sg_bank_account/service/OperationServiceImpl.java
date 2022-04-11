@@ -19,8 +19,8 @@ public class OperationServiceImpl implements OperationService {
             throw new DepositNegativeAmountException("Deposit failed because amount is negative!");
         }
         try {
-            var account = accountService.getAccountByUser(user.getId());
-            account.setAmount(account.getAmount() + amount);
+            var account = accountService.getAccountByUserId(user.getId());
+            account.setBalance(account.getBalance() + amount);
             accountService.saveAccount(account);
         } catch (AccountNotFoundException e) {
             throw new DepositFailedException("Deposit failed because User: "+ user.getId() +" has no account!", e);
@@ -36,9 +36,9 @@ public class OperationServiceImpl implements OperationService {
             throw new WithdrawalThresholdAmountException("Withdrawal failed because amount threshold not reached: "+ amount);
         }
         try {
-            var account = accountService.getAccountByUser(user.getId());
-            if (account.getAmount() >= amount) {
-                account.setAmount(account.getAmount() - amount);
+            var account = accountService.getAccountByUserId(user.getId());
+            if (account.getBalance() >= amount) {
+                account.setBalance(account.getBalance() - amount);
                 accountService.saveAccount(account);
             } else {
                 throw new WithdrawalNotEnoughBalanceException("Withdrawal failed because not enough balance for user: " + user.getId());

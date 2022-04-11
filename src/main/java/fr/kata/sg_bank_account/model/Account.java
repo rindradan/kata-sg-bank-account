@@ -5,12 +5,12 @@ import java.util.UUID;
 public class Account {
     private final UUID id;
     private final User user;
-    private double amount;
+    private double balance;
 
-    public Account(UUID id, User user, double amount) {
+    public Account(UUID id, User user, double balance) {
         this.id = id;
         this.user = user;
-        this.amount = amount;
+        this.balance = balance;
     }
 
     public UUID getId() {
@@ -21,11 +21,11 @@ public class Account {
         return user;
     }
 
-    public double getAmount() {
-        return amount;
+    public double getBalance() {
+        return balance;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 }

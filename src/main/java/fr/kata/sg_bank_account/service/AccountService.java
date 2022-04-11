@@ -10,7 +10,7 @@ public interface AccountService {
 
     Map<UUID,Account> getAccountMap();
 
-    Account getAccountByUser(UUID userId) throws AccountNotFoundException;
+    Account getAccountByUserId(UUID userId) throws AccountNotFoundException;
 
     Account saveAccount(Account account);
 }

@@ -33,7 +33,7 @@ class TestAccountTransactionService {
     @Test
     void should_get_account_transaction_by_id() throws ParseException, AccountTransactionNotFoundException {
         AccountTransactionService accountTransactionService = new AccountTransactionServiceImpl();
-        accountTransactionService.getAccountTransactions().addAll(TestAccountTransactionData.generateAccountTransactions());
+        accountTransactionService.getAccountTransactions().addAll(TestAccountTransactionServiceData.generateAccountTransactions());
 
         var accountTransaction = accountTransactionService.getAccountTransactionById(UUID.fromString("844e5738-dcbb-4cff-960d-39fbe1101357"));
         assertNotNull(accountTransaction);
@@ -56,7 +56,7 @@ class TestAccountTransactionService {
     @Test
     void should_get_account_transaction_by_user_id() throws ParseException {
         AccountTransactionService accountTransactionService = new AccountTransactionServiceImpl();
-        accountTransactionService.getAccountTransactions().addAll(TestAccountTransactionData.generateAccountTransactions());
+        accountTransactionService.getAccountTransactions().addAll(TestAccountTransactionServiceData.generateAccountTransactions());
 
         var accountTransactions = accountTransactionService.getAccountTransactionByUserId(UUID.fromString("dd8d795c-b980-11ec-8422-0242ac120002"));
         assertFalse(accountTransactions.isEmpty());

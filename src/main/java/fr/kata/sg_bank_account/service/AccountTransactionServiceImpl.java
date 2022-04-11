@@ -4,6 +4,7 @@ import fr.kata.sg_bank_account.exception.AccountTransactionNotFoundException;
 import fr.kata.sg_bank_account.model.AccountTransaction;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,6 +31,9 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
 
     @Override
     public List<AccountTransaction> getAccountTransactionByUserId(UUID userId) {
-        return accountTransactions.stream().filter(accountTransaction -> userId.equals(accountTransaction.getAccount().getUser().getId())).toList();
+        return accountTransactions.stream()
+            .filter(accountTransaction -> userId.equals(accountTransaction.getAccount().getUser().getId()))
+            .sorted(Comparator.comparing(AccountTransaction::getDate))
+            .toList();
     }
 }

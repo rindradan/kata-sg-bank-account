@@ -17,7 +17,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account  getAccountByUser(UUID userId) throws AccountNotFoundException {
+    public Account getAccountByUserId(UUID userId) throws AccountNotFoundException {
         if (accountMap.containsKey(userId)) {
             return accountMap.get(userId);
         }

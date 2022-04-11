@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class TestAccountTransactionData {
+public class TestAccountTransactionServiceData {
 
     static List<AccountTransaction> generateAccountTransactions() throws ParseException {
         var user = new User(UUID.fromString("dd8d795c-b980-11ec-8422-0242ac120002"), "John Doe");
@@ -20,17 +20,17 @@ public class TestAccountTransactionData {
 
         var accountTransactions = new ArrayList<AccountTransaction>();
         accountTransactions.add(new AccountTransaction(
-            UUID.fromString("844e5738-dcbb-4cff-960d-39fbe1101357"),
-            formatter.parse("2022-01-15 07:10"),
-            10,
-            TransactionType.DEPOSIT,
-            account
-        ));
-        accountTransactions.add(new AccountTransaction(
             UUID.fromString("369aea4e-5453-47a5-9557-f0850650ece7"),
             formatter.parse("2022-01-25 10:22"),
             15,
             TransactionType.WITHDRAWAL,
+            account
+        ));
+        accountTransactions.add(new AccountTransaction(
+            UUID.fromString("844e5738-dcbb-4cff-960d-39fbe1101357"),
+            formatter.parse("2022-01-15 07:10"),
+            10,
+            TransactionType.DEPOSIT,
             account
         ));
 
