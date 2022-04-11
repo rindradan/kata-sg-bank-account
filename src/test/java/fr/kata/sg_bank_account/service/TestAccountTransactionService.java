@@ -1,16 +1,18 @@
 package fr.kata.sg_bank_account.service;
 
+import fr.kata.sg_bank_account.exception.AccountTransactionNotFoundException;
 import fr.kata.sg_bank_account.model.Account;
 import fr.kata.sg_bank_account.model.AccountTransaction;
 import fr.kata.sg_bank_account.model.TransactionType;
 import fr.kata.sg_bank_account.model.User;
 import org.junit.jupiter.api.Test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class TestAccountTransactionService {
 
@@ -26,5 +28,21 @@ class TestAccountTransactionService {
 
         assertNotNull(savedAccountTransaction);
         assertNotNull(savedAccountTransaction.getId());
+    }
+
+    @Test
+    void should_get_account_transaction_by_id() throws ParseException, AccountTransactionNotFoundException {
+        AccountTransactionService accountTransactionService = new AccountTransactionServiceImpl();
+        accountTransactionService.getAccountTransactions().addAll(TestAccountTransactionData.generateAccountTransactions());
+
+        AccountTransaction accountTransaction = accountTransactionService.getAccountTransactionById(UUID.fromString("844e5738-dcbb-4cff-960d-39fbe1101357"));
+        assertNotNull(accountTransaction);
+
+        var formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date date = formatter.parse("2022-01-15 07:10");
+        assertEquals(date, accountTransaction.getDate());
+        assertEquals(TransactionType.DEPOSIT, accountTransaction.getTransactionType());
+        assertEquals(10, accountTransaction.getAmount());
+        assertEquals(UUID.fromString("90cc9ce0-b9a0-11ec-8422-0242ac120002"), accountTransaction.getAccount().getId());
     }
 }
