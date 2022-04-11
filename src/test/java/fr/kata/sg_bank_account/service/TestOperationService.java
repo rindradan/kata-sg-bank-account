@@ -52,7 +52,7 @@ class TestOperationService {
     }
 
     @Test
-    void should_withdraw_successfully() throws AccountNotFoundException, WithdrawalNotEnoughBalanceException, WithdrawalThresholdAmountException, WithdrawalNegativeAmountException {
+    void should_withdraw_successfully() throws AccountNotFoundException, WithdrawalNotEnoughBalanceException, WithdrawalThresholdAmountException, WithdrawalNegativeAmountException, WithdrawalFailedException {
         var userId = UUID.randomUUID();
         User user = new User(userId, "John Doe");
         var account = new Account(UUID.randomUUID(), user, 40);
@@ -67,7 +67,7 @@ class TestOperationService {
     }
 
     @Test
-    void should_withdraw_fail_when_not_enough_balance() throws AccountNotFoundException {
+    void should_withdrawal_fail_when_not_enough_balance() throws AccountNotFoundException {
         var userId = UUID.randomUUID();
         User user = new User(userId, "John Doe");
         var account = new Account(UUID.randomUUID(), user, 7);
@@ -77,16 +77,24 @@ class TestOperationService {
     }
 
     @Test
-    void should_withdraw_fail_when_amount_less_than_threshold() {
+    void should_withdrawal_fail_when_amount_less_than_threshold() {
         var userId = UUID.randomUUID();
         User user = new User(userId, "John Doe");
         assertThrows(WithdrawalThresholdAmountException.class, () -> operationService.withdraw(user, 10));
     }
 
     @Test
-    void should_withdraw_fail_when_negative_amount() {
+    void should_withdrawal_fail_when_negative_amount() {
         var userId = UUID.randomUUID();
         User user = new User(userId, "John Doe");
         assertThrows(WithdrawalNegativeAmountException.class, () -> operationService.withdraw(user, -50));
+    }
+
+    @Test
+    void should_withdrawal_fail_when_user_has_no_account() throws AccountNotFoundException {
+        var userId = UUID.randomUUID();
+        User user = new User(userId, "John Doe");
+        when(accountService.getAccountByUser(any(UUID.class))).thenThrow(AccountNotFoundException.class);
+        assertThrows(WithdrawalFailedException.class, () -> operationService.withdraw(user, 20));
     }
 }

@@ -28,19 +28,23 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    public void withdraw(User user, double amount) throws AccountNotFoundException, WithdrawalNotEnoughBalanceException, WithdrawalThresholdAmountException, WithdrawalNegativeAmountException {
+    public void withdraw(User user, double amount) throws WithdrawalNotEnoughBalanceException, WithdrawalThresholdAmountException, WithdrawalNegativeAmountException, WithdrawalFailedException {
         if (amount <= WITHDRAWAL_NEGATIVE_AMOUNT) {
             throw new WithdrawalNegativeAmountException("Withdrawal failed because amount is negative");
         }
         if (amount <= WITHDRAWAL_THRESHOLD_AMOUNT) {
             throw new WithdrawalThresholdAmountException("Withdrawal failed because amount threshold not reached: "+ amount);
         }
-        var account = accountService.getAccountByUser(user.getId());
-        if (account.getAmount() >= amount) {
-            account.setAmount(account.getAmount() - amount);
-            accountService.saveAccount(account);
-        } else {
-            throw new WithdrawalNotEnoughBalanceException("Withdrawal failed because not enough balance for user: " + user.getId());
+        try {
+            var account = accountService.getAccountByUser(user.getId());
+            if (account.getAmount() >= amount) {
+                account.setAmount(account.getAmount() - amount);
+                accountService.saveAccount(account);
+            } else {
+                throw new WithdrawalNotEnoughBalanceException("Withdrawal failed because not enough balance for user: " + user.getId());
+            }
+        } catch (AccountNotFoundException e) {
+            throw new WithdrawalFailedException("Withdrawal failed because user: "+ user.getId() +" has no account");
         }
     }
 }
