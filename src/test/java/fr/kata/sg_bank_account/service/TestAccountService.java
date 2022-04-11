@@ -30,4 +30,22 @@ public class TestAccountService {
             accountService.getAccountByUser(UUID.randomUUID());
         });
     }
+
+    @Test
+    void should_update_existing_account() throws AccountNotFoundException {
+        AccountService accountService = new AccountServiceImpl();
+        accountService.getAccountMap().putAll(TestAccountServiceData.generateAccounts());
+
+        UUID userId = UUID.fromString("dd8d795c-b980-11ec-8422-0242ac120002");
+        Account account = TestAccountServiceData.generateAccount();
+        assertEquals(UUID.fromString("90cc9ce0-b9a0-11ec-8422-0242ac120002"), account.getId());
+        assertEquals(userId, account.getUser().getId());
+        assertEquals(10, account.getAmount());
+        assertEquals(10, accountService.getAccountByUser(userId).getAmount());
+
+        account.setAmount(50);
+        accountService.saveAccount(account);
+
+        assertEquals(50, accountService.getAccountByUser(userId).getAmount());
+    }
 }

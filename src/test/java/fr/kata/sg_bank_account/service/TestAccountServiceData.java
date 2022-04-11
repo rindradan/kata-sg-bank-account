@@ -23,4 +23,11 @@ public class TestAccountServiceData {
 
         return accountMap;
     }
+
+    static Account generateAccount() {
+        UUID accountId = UUID.fromString("90cc9ce0-b9a0-11ec-8422-0242ac120002");
+        UUID userId = UUID.fromString("dd8d795c-b980-11ec-8422-0242ac120002");
+        User user = new User(userId, "John Doe");
+        return new Account(accountId, user, 10);
+    }
 }

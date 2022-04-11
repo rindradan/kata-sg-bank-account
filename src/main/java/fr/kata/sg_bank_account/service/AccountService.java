@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public interface AccountService {
-    Account getAccountByUser(UUID userId) throws AccountNotFoundException;
     Map<UUID,Account> getAccountMap();
+    Account getAccountByUser(UUID userId) throws AccountNotFoundException;
+    void saveAccount(Account account);
 }

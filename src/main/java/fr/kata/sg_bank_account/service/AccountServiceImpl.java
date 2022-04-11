@@ -12,6 +12,11 @@ public class AccountServiceImpl implements AccountService {
     private final Map<UUID,Account> accountMap = new HashMap<>();
 
     @Override
+    public Map<UUID, Account> getAccountMap() {
+        return accountMap;
+    }
+
+    @Override
     public Account  getAccountByUser(UUID userId) throws AccountNotFoundException {
         if (accountMap.containsKey(userId)) {
             return accountMap.get(userId);
@@ -20,7 +25,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<UUID, Account> getAccountMap() {
-        return accountMap;
+    public void saveAccount(Account account) {
+        accountMap.put(account.getUser().getId(), account);
     }
 }
