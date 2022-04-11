@@ -27,18 +27,21 @@ public class TestAccountTransactionData {
             account
         ));
         accountTransactions.add(new AccountTransaction(
-            UUID.randomUUID(),
+            UUID.fromString("369aea4e-5453-47a5-9557-f0850650ece7"),
             formatter.parse("2022-01-25 10:22"),
             15,
             TransactionType.WITHDRAWAL,
             account
         ));
+
+        var testUser = new User(UUID.randomUUID(), "Van Dame");
+        var testAccount = new Account(UUID.randomUUID(), testUser, 33);
         accountTransactions.add(new AccountTransaction(
             UUID.randomUUID(),
             formatter.parse("2022-01-26 17:49"),
             30,
             TransactionType.WITHDRAWAL,
-            account
+            testAccount
         ));
 
         return accountTransactions;

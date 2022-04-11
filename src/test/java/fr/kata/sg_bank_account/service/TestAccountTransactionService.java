@@ -52,4 +52,16 @@ class TestAccountTransactionService {
         assertThrows(AccountTransactionNotFoundException.class,
             () -> accountTransactionService.getAccountTransactionById(UUID.fromString("844e5738-dcbb-4cff-960d-39fbe1101357")));
     }
+
+    @Test
+    void should_get_account_transaction_by_user_id() throws ParseException {
+        AccountTransactionService accountTransactionService = new AccountTransactionServiceImpl();
+        accountTransactionService.getAccountTransactions().addAll(TestAccountTransactionData.generateAccountTransactions());
+
+        var accountTransactions = accountTransactionService.getAccountTransactionByUserId(UUID.fromString("dd8d795c-b980-11ec-8422-0242ac120002"));
+        assertFalse(accountTransactions.isEmpty());
+        assertEquals(2, accountTransactions.size());
+        assertEquals(UUID.fromString("844e5738-dcbb-4cff-960d-39fbe1101357"), accountTransactions.get(0).getId());
+        assertEquals(UUID.fromString("369aea4e-5453-47a5-9557-f0850650ece7"), accountTransactions.get(1).getId());
+    }
 }

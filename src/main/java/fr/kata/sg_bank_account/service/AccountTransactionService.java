@@ -13,4 +13,6 @@ public interface AccountTransactionService {
     AccountTransaction createAccountTransaction(AccountTransaction accountTransaction);
 
     AccountTransaction getAccountTransactionById(UUID id) throws AccountTransactionNotFoundException;
+
+    List<AccountTransaction> getAccountTransactionByUserId(UUID userId);
 }

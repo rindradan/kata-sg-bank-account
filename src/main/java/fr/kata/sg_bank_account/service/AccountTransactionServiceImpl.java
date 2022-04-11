@@ -27,4 +27,9 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     public AccountTransaction getAccountTransactionById(UUID id) throws AccountTransactionNotFoundException {
         return accountTransactions.stream().filter(accountTransaction -> id.equals(accountTransaction.getId())).findFirst().orElseThrow(AccountTransactionNotFoundException::new);
     }
+
+    @Override
+    public List<AccountTransaction> getAccountTransactionByUserId(UUID userId) {
+        return accountTransactions.stream().filter(accountTransaction -> userId.equals(accountTransaction.getAccount().getUser().getId())).toList();
+    }
 }
