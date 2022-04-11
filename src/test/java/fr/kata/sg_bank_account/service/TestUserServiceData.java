@@ -7,13 +7,16 @@ import java.util.Map;
 import java.util.UUID;
 
 public class TestUserServiceData {
+
     static Map<UUID, User> generateUsers() {
-        Map<UUID,User> users = new HashMap<>();
-        UUID id = UUID.fromString("dd8d795c-b980-11ec-8422-0242ac120002");
+        var users = new HashMap<UUID,User>();
+        var id = UUID.fromString("dd8d795c-b980-11ec-8422-0242ac120002");
         users.put(id, new User(id, "John Doe"));
-        UUID randomId = UUID.randomUUID();
+
+        var randomId = UUID.randomUUID();
         users.put(randomId, new User(randomId, "Random User"));
-        UUID testId = UUID.randomUUID();
+
+        var testId = UUID.randomUUID();
         users.put(testId, new User(testId, "Test User"));
         return users;
     }
