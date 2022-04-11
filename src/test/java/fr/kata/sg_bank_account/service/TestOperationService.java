@@ -26,7 +26,7 @@ class TestOperationService {
     private OperationServiceImpl operationService;
 
     @Test
-    void should_deposit_successfully() throws AccountNotFoundException, DepositFailedException, DepositAmountNegativeException {
+    void should_deposit_successfully() throws AccountNotFoundException, DepositFailedException, DepositNegativeAmountException {
         var userId = UUID.randomUUID();
         var user = new User(userId, "John Doe");
         var account = new Account(UUID.randomUUID(), user, 10);
@@ -42,7 +42,7 @@ class TestOperationService {
 
     @Test
     void should_deposit_fail_when_negative_amount() {
-        assertThrows(DepositAmountNegativeException.class, () -> operationService.deposit(new User(UUID.randomUUID(), "John Doe"), -10));
+        assertThrows(DepositNegativeAmountException.class, () -> operationService.deposit(new User(UUID.randomUUID(), "John Doe"), -10));
     }
 
     @Test
@@ -52,7 +52,7 @@ class TestOperationService {
     }
 
     @Test
-    void should_withdraw_successfully() throws AccountNotFoundException, NotEnoughBalanceException, WithdrawalThresholdException {
+    void should_withdraw_successfully() throws AccountNotFoundException, WithdrawalNotEnoughBalanceException, WithdrawalThresholdAmountException, WithdrawalNegativeAmountException {
         var userId = UUID.randomUUID();
         User user = new User(userId, "John Doe");
         var account = new Account(UUID.randomUUID(), user, 40);
@@ -73,13 +73,20 @@ class TestOperationService {
         var account = new Account(UUID.randomUUID(), user, 7);
         when(accountService.getAccountByUser(userId)).thenReturn(account);
 
-        assertThrows(NotEnoughBalanceException.class, () -> operationService.withdraw(user, 20));
+        assertThrows(WithdrawalNotEnoughBalanceException.class, () -> operationService.withdraw(user, 20));
     }
 
     @Test
     void should_withdraw_fail_when_amount_less_than_threshold() {
         var userId = UUID.randomUUID();
         User user = new User(userId, "John Doe");
-        assertThrows(WithdrawalThresholdException.class, () -> operationService.withdraw(user, 10));
+        assertThrows(WithdrawalThresholdAmountException.class, () -> operationService.withdraw(user, 10));
+    }
+
+    @Test
+    void should_withdraw_fail_when_negative_amount() {
+        var userId = UUID.randomUUID();
+        User user = new User(userId, "John Doe");
+        assertThrows(WithdrawalNegativeAmountException.class, () -> operationService.withdraw(user, -50));
     }
 }
