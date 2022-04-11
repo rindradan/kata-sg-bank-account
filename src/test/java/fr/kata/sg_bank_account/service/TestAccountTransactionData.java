@@ -18,7 +18,7 @@ public class TestAccountTransactionData {
         var account = new Account(UUID.fromString("90cc9ce0-b9a0-11ec-8422-0242ac120002"), user, 22);
         var formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-        List<AccountTransaction> accountTransactions = new ArrayList<>();
+        var accountTransactions = new ArrayList<AccountTransaction>();
         accountTransactions.add(new AccountTransaction(
             UUID.fromString("844e5738-dcbb-4cff-960d-39fbe1101357"),
             formatter.parse("2022-01-15 07:10"),
