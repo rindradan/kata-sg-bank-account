@@ -53,4 +53,19 @@ public class TestOperationService {
             operationService.deposit(new User(UUID.randomUUID(), "John Doe"), 10);
         });
     }
+
+    @Test
+    void should_withdraw_successfully() throws AccountNotFoundException {
+        var userId = UUID.randomUUID();
+        User user = new User(userId, "John Doe");
+        var account = new Account(UUID.randomUUID(), user, 40);
+        when(accountService.getAccountByUser(userId)).thenReturn(account);
+
+        operationService.withdraw(user, 25);
+
+        verify(accountService, times(1)).getAccountByUser(user.getId());
+        var accountCaptor = ArgumentCaptor.forClass(Account.class);
+        verify(accountService, times(1)).saveAccount(accountCaptor.capture());
+        assertEquals(15, accountCaptor.getValue().getAmount());
+    }
 }

@@ -25,4 +25,11 @@ public class OperationServiceImpl implements OperationService {
             throw new DepositFailedException("Deposit failed because User: "+ user.getId() +" has no account!", e);
         }
     }
+
+    @Override
+    public void withdraw(User user, double amount) throws AccountNotFoundException {
+        var account = accountService.getAccountByUser(user.getId());
+        account.setAmount(account.getAmount() - amount);
+        accountService.saveAccount(account);
+    }
 }
