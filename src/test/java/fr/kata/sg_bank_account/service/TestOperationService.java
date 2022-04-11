@@ -1,9 +1,6 @@
 package fr.kata.sg_bank_account.service;
 
-import fr.kata.sg_bank_account.exception.AccountNotFoundException;
-import fr.kata.sg_bank_account.exception.DepositAmountNegativeException;
-import fr.kata.sg_bank_account.exception.DepositFailedException;
-import fr.kata.sg_bank_account.exception.NotEnoughBalanceException;
+import fr.kata.sg_bank_account.exception.*;
 import fr.kata.sg_bank_account.model.Account;
 import fr.kata.sg_bank_account.model.User;
 import org.junit.jupiter.api.Test;
@@ -55,7 +52,7 @@ class TestOperationService {
     }
 
     @Test
-    void should_withdraw_successfully() throws AccountNotFoundException, NotEnoughBalanceException {
+    void should_withdraw_successfully() throws AccountNotFoundException, NotEnoughBalanceException, WithdrawalThresholdException {
         var userId = UUID.randomUUID();
         User user = new User(userId, "John Doe");
         var account = new Account(UUID.randomUUID(), user, 40);
@@ -77,5 +74,12 @@ class TestOperationService {
         when(accountService.getAccountByUser(userId)).thenReturn(account);
 
         assertThrows(NotEnoughBalanceException.class, () -> operationService.withdraw(user, 20));
+    }
+
+    @Test
+    void should_withdraw_fail_when_amount_less_than_threshold() {
+        var userId = UUID.randomUUID();
+        User user = new User(userId, "John Doe");
+        assertThrows(WithdrawalThresholdException.class, () -> operationService.withdraw(user, 10));
     }
 }

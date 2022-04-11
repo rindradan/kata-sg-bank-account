@@ -1,13 +1,11 @@
 package fr.kata.sg_bank_account.service;
 
-import fr.kata.sg_bank_account.exception.AccountNotFoundException;
-import fr.kata.sg_bank_account.exception.DepositAmountNegativeException;
-import fr.kata.sg_bank_account.exception.DepositFailedException;
-import fr.kata.sg_bank_account.exception.NotEnoughBalanceException;
+import fr.kata.sg_bank_account.exception.*;
 import fr.kata.sg_bank_account.model.User;
 
 public class OperationServiceImpl implements OperationService {
 
+    private static final double WITHDRAWAL_AMOUNT_THRESHOLD = 10;
     private final AccountService accountService;
 
     public OperationServiceImpl(AccountService accountService) {
@@ -29,7 +27,10 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    public void withdraw(User user, double amount) throws AccountNotFoundException, NotEnoughBalanceException {
+    public void withdraw(User user, double amount) throws AccountNotFoundException, NotEnoughBalanceException, WithdrawalThresholdException {
+        if (amount <= WITHDRAWAL_AMOUNT_THRESHOLD) {
+            throw new WithdrawalThresholdException("Withdrawal failed because amount threshold not reached: "+ amount);
+        }
         var account = accountService.getAccountByUser(user.getId());
         if (account.getAmount() >= amount) {
             account.setAmount(account.getAmount() - amount);
