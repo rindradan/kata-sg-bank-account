@@ -1,6 +1,7 @@
 package fr.kata.sg_bank_account.service;
 
 import fr.kata.sg_bank_account.exception.AccountNotFoundException;
+import fr.kata.sg_bank_account.exception.DepositAmountNegativeException;
 import fr.kata.sg_bank_account.exception.DepositFailedException;
 import fr.kata.sg_bank_account.exception.NotEnoughBalanceException;
 import fr.kata.sg_bank_account.model.User;
@@ -14,9 +15,9 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    public void deposit(User user, double amount) throws DepositFailedException {
+    public void deposit(User user, double amount) throws DepositFailedException, DepositAmountNegativeException {
         if (amount < 0) {
-            throw new DepositFailedException("Deposit amount is not valid!");
+            throw new DepositAmountNegativeException("Deposit failed because amount is negative!");
         }
         try {
             var account = accountService.getAccountByUser(user.getId());

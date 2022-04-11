@@ -1,6 +1,7 @@
 package fr.kata.sg_bank_account.service;
 
 import fr.kata.sg_bank_account.exception.AccountNotFoundException;
+import fr.kata.sg_bank_account.exception.DepositAmountNegativeException;
 import fr.kata.sg_bank_account.exception.DepositFailedException;
 import fr.kata.sg_bank_account.exception.NotEnoughBalanceException;
 import fr.kata.sg_bank_account.model.Account;
@@ -28,7 +29,7 @@ class TestOperationService {
     private OperationServiceImpl operationService;
 
     @Test
-    void should_deposit_successfully() throws AccountNotFoundException, DepositFailedException {
+    void should_deposit_successfully() throws AccountNotFoundException, DepositFailedException, DepositAmountNegativeException {
         var userId = UUID.randomUUID();
         var user = new User(userId, "John Doe");
         var account = new Account(UUID.randomUUID(), user, 10);
@@ -44,7 +45,7 @@ class TestOperationService {
 
     @Test
     void should_deposit_fail_when_negative_amount() {
-        assertThrows(DepositFailedException.class, () -> operationService.deposit(new User(UUID.randomUUID(), "John Doe"), -10));
+        assertThrows(DepositAmountNegativeException.class, () -> operationService.deposit(new User(UUID.randomUUID(), "John Doe"), -10));
     }
 
     @Test
