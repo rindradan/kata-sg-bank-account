@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.UUID;
 
 public interface UserService {
+
     User getUser(UUID id) throws UserNotFoundException;
+
     Map<UUID,User> getUserMap();
 }
