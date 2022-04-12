@@ -1,13 +1,15 @@
 package fr.kata.sg_bank_account.service;
 
-import fr.kata.sg_bank_account.exception.WithdrawalFailedException;
-import fr.kata.sg_bank_account.exception.WithdrawalNegativeAmountException;
-import fr.kata.sg_bank_account.exception.WithdrawalNotEnoughBalanceException;
-import fr.kata.sg_bank_account.exception.WithdrawalThresholdAmountException;
-import fr.kata.sg_bank_account.model.User;
+import fr.kata.sg_bank_account.exception.AccountNotFoundException;
+import fr.kata.sg_bank_account.exception.OperationFailedException;
+import fr.kata.sg_bank_account.exception.UserNotFoundException;
+import fr.kata.sg_bank_account.model.Account;
 
-@Deprecated(forRemoval = true)
+import java.util.UUID;
+
 public interface OperationService {
 
-    void withdraw(User user, double amount) throws WithdrawalNotEnoughBalanceException, WithdrawalThresholdAmountException, WithdrawalNegativeAmountException, WithdrawalFailedException;
+    void validateExecution(Account account, double amount) throws OperationFailedException;
+
+    void execute(UUID userId, double amount) throws OperationFailedException, UserNotFoundException, AccountNotFoundException;
 }

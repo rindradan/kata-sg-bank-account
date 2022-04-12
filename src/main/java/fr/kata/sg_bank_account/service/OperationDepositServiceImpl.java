@@ -9,7 +9,7 @@ import fr.kata.sg_bank_account.model.User;
 
 import java.util.Date;
 
-public class OperationDepositServiceImpl extends OperationServiceImplV2 implements OperationServiceV2 {
+public class OperationDepositServiceImpl extends OperationServiceImpl implements OperationService {
 
     protected OperationDepositServiceImpl(UserService userService, AccountService accountService, AccountTransactionService accountTransactionService) {
         super(userService, accountService, accountTransactionService);

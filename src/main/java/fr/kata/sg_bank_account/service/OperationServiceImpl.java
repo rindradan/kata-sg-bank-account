@@ -1,46 +1,34 @@
 package fr.kata.sg_bank_account.service;
 
-import fr.kata.sg_bank_account.exception.*;
-import fr.kata.sg_bank_account.model.AccountTransaction;
-import fr.kata.sg_bank_account.model.TransactionType;
+import fr.kata.sg_bank_account.exception.AccountNotFoundException;
+import fr.kata.sg_bank_account.exception.OperationFailedException;
+import fr.kata.sg_bank_account.exception.UserNotFoundException;
+import fr.kata.sg_bank_account.model.Account;
 import fr.kata.sg_bank_account.model.User;
 
-import java.util.Date;
+import java.util.UUID;
 
-@Deprecated(forRemoval = true)
-public class OperationServiceImpl implements OperationService {
+public abstract class OperationServiceImpl implements OperationService {
 
-    private static final double WITHDRAWAL_THRESHOLD_AMOUNT = 10;
-    private static final double WITHDRAWAL_NEGATIVE_AMOUNT = 0;
-    private final AccountService accountService;
-    private final AccountTransactionService accountTransactionService;
+    protected final UserService userService;
+    protected final AccountService accountService;
+    protected final AccountTransactionService accountTransactionService;
 
-    public OperationServiceImpl(AccountService accountService, AccountTransactionService accountTransactionService) {
+    protected OperationServiceImpl(UserService userService, AccountService accountService, AccountTransactionService accountTransactionService) {
+        this.userService = userService;
         this.accountService = accountService;
         this.accountTransactionService = accountTransactionService;
     }
 
-    @Override
-    public void withdraw(User user, double amount) throws WithdrawalNotEnoughBalanceException, WithdrawalThresholdAmountException, WithdrawalNegativeAmountException, WithdrawalFailedException {
-        if (amount <= WITHDRAWAL_NEGATIVE_AMOUNT) {
-            throw new WithdrawalNegativeAmountException("Withdrawal failed because amount is negative");
-        }
-        if (amount <= WITHDRAWAL_THRESHOLD_AMOUNT) {
-            throw new WithdrawalThresholdAmountException("Withdrawal failed because amount threshold not reached: "+ amount);
-        }
-        try {
-            var account = accountService.getAccountByUserId(user.getId());
-            if (account.getBalance() >= amount) {
-                account.setBalance(account.getBalance() - amount);
-                accountService.saveAccount(account);
+    abstract void action(User user, Account account, double amount);
 
-                var accountTransaction = new AccountTransaction(new Date(), amount, TransactionType.WITHDRAWAL, account);
-                accountTransactionService.createAccountTransaction(accountTransaction);
-            } else {
-                throw new WithdrawalNotEnoughBalanceException("Withdrawal failed because not enough balance for user: " + user.getId());
-            }
-        } catch (AccountNotFoundException e) {
-            throw new WithdrawalFailedException("Withdrawal failed because user: "+ user.getId() +" has no account");
-        }
+    abstract void postAction(User user, Account account, double amount);
+
+    public final void execute(UUID userId, double amount) throws OperationFailedException, UserNotFoundException, AccountNotFoundException {
+        User user = userService.getUser(userId);
+        Account account = accountService.getAccountByUserId(userId);
+        validateExecution(account, amount);
+        action(user, account, amount);
+        postAction(user, account, amount);
     }
 }

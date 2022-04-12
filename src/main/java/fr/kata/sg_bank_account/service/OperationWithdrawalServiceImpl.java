@@ -11,7 +11,7 @@ import fr.kata.sg_bank_account.model.User;
 
 import java.util.Date;
 
-public class OperationWithdrawalServiceImpl extends OperationServiceImplV2 implements OperationServiceV2 {
+public class OperationWithdrawalServiceImpl extends OperationServiceImpl implements OperationService {
 
     private static final double WITHDRAWAL_THRESHOLD_AMOUNT = 10;
     private static final double WITHDRAWAL_NEGATIVE_AMOUNT = 0;
