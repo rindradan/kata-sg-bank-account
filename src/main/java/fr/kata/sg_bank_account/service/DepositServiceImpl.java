@@ -1,6 +1,5 @@
 package fr.kata.sg_bank_account.service;
 
-import fr.kata.sg_bank_account.exception.DepositFailedException;
 import fr.kata.sg_bank_account.exception.DepositNegativeAmountException;
 import fr.kata.sg_bank_account.exception.OperationFailedException;
 import fr.kata.sg_bank_account.model.Account;
@@ -14,11 +13,6 @@ public class DepositServiceImpl extends OperationServiceImplV2 implements Operat
 
     protected DepositServiceImpl(UserService userService, AccountService accountService, AccountTransactionService accountTransactionService) {
         super(userService, accountService, accountTransactionService);
-    }
-
-    @Override
-    OperationFailedException getOperationException() {
-        return new DepositFailedException();
     }
 
     @Override

@@ -20,31 +20,13 @@ public abstract class OperationServiceImplV2 implements OperationServiceV2 {
         this.accountTransactionService = accountTransactionService;
     }
 
-    abstract OperationFailedException getOperationException();
-
-    final User prepareUser(UUID userId) throws OperationFailedException {
-        try {
-            return userService.getUser(userId);
-        } catch (UserNotFoundException e) {
-            throw getOperationException();
-        }
-    }
-
-    final Account prepareAccount(UUID userId) throws OperationFailedException {
-        try {
-            return accountService.getAccountByUserId(userId);
-        } catch (AccountNotFoundException e) {
-            throw getOperationException();
-        }
-    }
-
     abstract void action(User user, Account account, double amount);
 
     abstract void postAction(User user, Account account, double amount);
 
-    public final void execute(UUID userId, double amount) throws OperationFailedException {
-        User user = prepareUser(userId);
-        Account account = prepareAccount(userId);
+    public final void execute(UUID userId, double amount) throws OperationFailedException, UserNotFoundException, AccountNotFoundException {
+        User user = userService.getUser(userId);
+        Account account = accountService.getAccountByUserId(userId);
         validateExecution(amount);
         action(user, account, amount);
         postAction(user, account, amount);
