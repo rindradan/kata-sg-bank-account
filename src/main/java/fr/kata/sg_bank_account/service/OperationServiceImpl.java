@@ -7,6 +7,7 @@ import fr.kata.sg_bank_account.model.User;
 
 import java.util.Date;
 
+@Deprecated(forRemoval = true)
 public class OperationServiceImpl implements OperationService {
 
     private static final double WITHDRAWAL_THRESHOLD_AMOUNT = 10;

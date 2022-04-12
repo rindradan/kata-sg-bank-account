@@ -1,36 +1,42 @@
 package fr.kata.sg_bank_account.service;
 
-import fr.kata.sg_bank_account.exception.AccountNotFoundException;
-import fr.kata.sg_bank_account.exception.UserNotFoundException;
+import fr.kata.sg_bank_account.exception.DepositFailedException;
+import fr.kata.sg_bank_account.exception.DepositNegativeAmountException;
+import fr.kata.sg_bank_account.exception.OperationFailedException;
 import fr.kata.sg_bank_account.model.Account;
+import fr.kata.sg_bank_account.model.AccountTransaction;
+import fr.kata.sg_bank_account.model.TransactionType;
 import fr.kata.sg_bank_account.model.User;
 
-import java.util.UUID;
+import java.util.Date;
 
-public class DepositServiceImpl implements DepositService {
+public class DepositServiceImpl extends OperationServiceImplV2 implements OperationServiceV2 {
 
-    private final UserService userService;
-    private final AccountService accountService;
-
-    public DepositServiceImpl(UserService userService, AccountService accountService) {
-        this.userService = userService;
-        this.accountService = accountService;
+    protected DepositServiceImpl(UserService userService, AccountService accountService, AccountTransactionService accountTransactionService) {
+        super(userService, accountService, accountTransactionService);
     }
 
     @Override
-    public boolean canDeposit(UUID userId, double amount) {
-        User user;
-        try {
-            user = userService.getUser(userId);
-        } catch (UserNotFoundException e) {
-            return false;
+    OperationFailedException getOperationException() {
+        return new DepositFailedException();
+    }
+
+    @Override
+    public void validateExecution(double amount) throws OperationFailedException {
+        if (amount < 0) {
+            throw new DepositNegativeAmountException("Deposit failed because amount is negative!");
         }
-        Account account;
-        try {
-            account = accountService.getAccountByUserId(userId);
-        } catch (AccountNotFoundException e) {
-            return false;
-        }
-        return user != null && account != null && amount >= 0;
+    }
+
+    @Override
+    void action(User user, Account account, double amount) {
+        account.setBalance(account.getBalance() + amount);
+        accountService.saveAccount(account);
+    }
+
+    @Override
+    void postAction(User user, Account account, double amount) {
+        var accountTransaction = new AccountTransaction(new Date(), amount, TransactionType.DEPOSIT, account);
+        accountTransactionService.createAccountTransaction(accountTransaction);
     }
 }
