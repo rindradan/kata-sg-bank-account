@@ -1,6 +1,9 @@
 package fr.kata.sg_bank_account.exception;
 
-public class WithdrawalNegativeAmountException extends Exception {
+public class WithdrawalNegativeAmountException extends OperationFailedException {
+
+    public WithdrawalNegativeAmountException() {
+    }
 
     public WithdrawalNegativeAmountException(String message) {
         super(message);

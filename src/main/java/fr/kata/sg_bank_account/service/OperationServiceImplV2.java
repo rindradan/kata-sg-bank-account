@@ -27,7 +27,7 @@ public abstract class OperationServiceImplV2 implements OperationServiceV2 {
     public final void execute(UUID userId, double amount) throws OperationFailedException, UserNotFoundException, AccountNotFoundException {
         User user = userService.getUser(userId);
         Account account = accountService.getAccountByUserId(userId);
-        validateExecution(amount);
+        validateExecution(account, amount);
         action(user, account, amount);
         postAction(user, account, amount);
     }

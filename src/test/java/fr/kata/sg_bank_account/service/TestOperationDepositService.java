@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TestDepositService {
+class TestOperationDepositService {
 
     @Mock
     private UserServiceImpl userService;
@@ -34,25 +34,31 @@ class TestDepositService {
     private AccountTransactionServiceImpl accountTransactionService;
     @Spy
     @InjectMocks
-    private DepositServiceImpl depositService;
+    private OperationDepositServiceImpl operationDepositService;
 
     @Test
     void should_be_able_to_deposit() throws UserNotFoundException, AccountNotFoundException, OperationFailedException {
         UUID userId = UUID.randomUUID();
-        double amount = 40;
+        double depositAmount = 40;
+        double actualBalance = 40;
         User user = new User(userId, "John Doe");
         when(userService.getUser(any(UUID.class))).thenReturn(user);
         Account account = new Account(UUID.randomUUID(), user);
         when(accountService.getAccountByUserId(any(UUID.class))).thenReturn(account);
 
-        depositService.execute(userId, amount);
+        operationDepositService.execute(userId, depositAmount);
 
-        verify(depositService, times(1)).validateExecution(amount);
-        verify(accountService, times(1)).saveAccount(account);
+        verify(userService, times(1)).getUser(userId);
+        verify(accountService, times(1)).getAccountByUserId(userId);
+        verify(operationDepositService, times(1)).validateExecution(account, depositAmount);
+
+        var accountCaptor = ArgumentCaptor.forClass(Account.class);
+        verify(accountService, times(1)).saveAccount(accountCaptor.capture());
+        assertEquals(actualBalance, accountCaptor.getValue().getBalance());
 
         var transactionCaptor = ArgumentCaptor.forClass(AccountTransaction.class);
         verify(accountTransactionService, times(1)).createAccountTransaction(transactionCaptor.capture());
-        assertEquals(amount, transactionCaptor.getValue().getAmount());
+        assertEquals(depositAmount, transactionCaptor.getValue().getAmount());
         assertEquals(TransactionType.DEPOSIT, transactionCaptor.getValue().getTransactionType());
         assertEquals(account, transactionCaptor.getValue().getAccount());
     }
@@ -62,7 +68,7 @@ class TestDepositService {
         UUID userId = UUID.randomUUID();
         when(userService.getUser(any(UUID.class))).thenThrow(UserNotFoundException.class);
 
-        assertThrows(UserNotFoundException.class, () -> depositService.execute(userId, 20));
+        assertThrows(UserNotFoundException.class, () -> operationDepositService.execute(userId, 20));
     }
 
     @Test
@@ -72,7 +78,7 @@ class TestDepositService {
         when(userService.getUser(any(UUID.class))).thenReturn(user);
         when(accountService.getAccountByUserId(any(UUID.class))).thenThrow(AccountNotFoundException.class);
 
-        assertThrows(AccountNotFoundException.class, () -> depositService.execute(userId, 20));
+        assertThrows(AccountNotFoundException.class, () -> operationDepositService.execute(userId, 20));
     }
 
     @Test
@@ -83,6 +89,6 @@ class TestDepositService {
         Account account = new Account(UUID.randomUUID(), user);
         when(accountService.getAccountByUserId(any(UUID.class))).thenReturn(account);
 
-        assertThrows(DepositNegativeAmountException.class, () -> depositService.execute(userId, -5));
+        assertThrows(DepositNegativeAmountException.class, () -> operationDepositService.execute(userId, -5));
     }
 }

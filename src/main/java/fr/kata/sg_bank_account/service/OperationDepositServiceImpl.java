@@ -9,14 +9,14 @@ import fr.kata.sg_bank_account.model.User;
 
 import java.util.Date;
 
-public class DepositServiceImpl extends OperationServiceImplV2 implements OperationServiceV2 {
+public class OperationDepositServiceImpl extends OperationServiceImplV2 implements OperationServiceV2 {
 
-    protected DepositServiceImpl(UserService userService, AccountService accountService, AccountTransactionService accountTransactionService) {
+    protected OperationDepositServiceImpl(UserService userService, AccountService accountService, AccountTransactionService accountTransactionService) {
         super(userService, accountService, accountTransactionService);
     }
 
     @Override
-    public void validateExecution(double amount) throws OperationFailedException {
+    public void validateExecution(Account account, double amount) throws OperationFailedException {
         if (amount < 0) {
             throw new DepositNegativeAmountException("Deposit failed because amount is negative!");
         }
