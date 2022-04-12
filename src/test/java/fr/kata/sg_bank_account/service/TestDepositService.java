@@ -1,6 +1,7 @@
 package fr.kata.sg_bank_account.service;
 
 import fr.kata.sg_bank_account.exception.AccountNotFoundException;
+import fr.kata.sg_bank_account.exception.DepositFailedException;
 import fr.kata.sg_bank_account.exception.OperationFailedException;
 import fr.kata.sg_bank_account.exception.UserNotFoundException;
 import fr.kata.sg_bank_account.model.Account;
@@ -18,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -55,13 +57,13 @@ class TestDepositService {
         assertEquals(account, transactionCaptor.getValue().getAccount());
     }
 
-    // @Test
-    // void should_not_be_able_to_deposit_when_user_not_exists() throws UserNotFoundException {
-    //     UUID userId = UUID.randomUUID();
-    //     when(userService.getUser(any(UUID.class))).thenThrow(UserNotFoundException.class);
-    //     assertFalse(depositService.prepareExecute(userId, 20));
-    // }
-    //
+    @Test
+    void should_not_be_able_to_deposit_when_user_not_exists() throws UserNotFoundException {
+        UUID userId = UUID.randomUUID();
+        when(userService.getUser(any(UUID.class))).thenThrow(UserNotFoundException.class);
+        assertThrows(DepositFailedException.class, () -> depositService.execute(userId, 20));
+    }
+
     // @Test
     // void should_not_be_able_to_deposit_when_user_account_not_exists() throws UserNotFoundException, AccountNotFoundException {
     //     UUID userId = UUID.randomUUID();
