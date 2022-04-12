@@ -21,23 +21,6 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    public void deposit(User user, double amount) throws DepositFailedException, DepositNegativeAmountException {
-        if (amount < 0) {
-            throw new DepositNegativeAmountException("Deposit failed because amount is negative!");
-        }
-        try {
-            var account = accountService.getAccountByUserId(user.getId());
-            account.setBalance(account.getBalance() + amount);
-            accountService.saveAccount(account);
-
-            var accountTransaction = new AccountTransaction(new Date(), amount, TransactionType.DEPOSIT, account);
-            accountTransactionService.createAccountTransaction(accountTransaction);
-        } catch (AccountNotFoundException e) {
-            throw new DepositFailedException("Deposit failed because User: "+ user.getId() +" has no account!", e);
-        }
-    }
-
-    @Override
     public void withdraw(User user, double amount) throws WithdrawalNotEnoughBalanceException, WithdrawalThresholdAmountException, WithdrawalNegativeAmountException, WithdrawalFailedException {
         if (amount <= WITHDRAWAL_NEGATIVE_AMOUNT) {
             throw new WithdrawalNegativeAmountException("Withdrawal failed because amount is negative");

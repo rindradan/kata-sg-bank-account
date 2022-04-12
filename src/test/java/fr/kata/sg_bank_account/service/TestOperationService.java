@@ -31,38 +31,6 @@ class TestOperationService {
     private OperationServiceImpl operationService;
 
     @Test
-    void should_deposit_successfully() throws AccountNotFoundException, DepositFailedException, DepositNegativeAmountException {
-        var userId = UUID.randomUUID();
-        var user = new User(userId, "John Doe");
-        var account = new Account(UUID.randomUUID(), user, 10);
-        when(accountService.getAccountByUserId(userId)).thenReturn(account);
-
-        operationService.deposit(user, 40);
-
-        verify(accountService, times(1)).getAccountByUserId(user.getId());
-        var accountCaptor = ArgumentCaptor.forClass(Account.class);
-        verify(accountService, times(1)).saveAccount(accountCaptor.capture());
-        assertEquals(50, accountCaptor.getValue().getBalance());
-
-        var transactionCaptor = ArgumentCaptor.forClass(AccountTransaction.class);
-        verify(accountTransactionService, times(1)).createAccountTransaction(transactionCaptor.capture());
-        assertEquals(40, transactionCaptor.getValue().getAmount());
-        assertEquals(TransactionType.DEPOSIT, transactionCaptor.getValue().getTransactionType());
-        assertEquals(account, transactionCaptor.getValue().getAccount());
-    }
-
-    @Test
-    void should_deposit_fail_when_negative_amount() {
-        assertThrows(DepositNegativeAmountException.class, () -> operationService.deposit(new User(UUID.randomUUID(), "John Doe"), -10));
-    }
-
-    @Test
-    void should_deposit_fail_when_user_has_no_account() throws AccountNotFoundException {
-        when(accountService.getAccountByUserId(any(UUID.class))).thenThrow(AccountNotFoundException.class);
-        assertThrows(DepositFailedException.class, () -> operationService.deposit(new User(UUID.randomUUID(), "John Doe"), 10));
-    }
-
-    @Test
     void should_withdraw_successfully() throws AccountNotFoundException, WithdrawalNotEnoughBalanceException, WithdrawalThresholdAmountException, WithdrawalNegativeAmountException, WithdrawalFailedException {
         var userId = UUID.randomUUID();
         var user = new User(userId, "John Doe");
