@@ -1,8 +1,6 @@
 package fr.kata.sg_bank_account.service;
 
-import fr.kata.sg_bank_account.exception.AccountNotFoundException;
-import fr.kata.sg_bank_account.exception.OperationFailedException;
-import fr.kata.sg_bank_account.exception.UserNotFoundException;
+import fr.kata.sg_bank_account.exception.*;
 import fr.kata.sg_bank_account.model.Account;
 import fr.kata.sg_bank_account.model.AccountTransaction;
 import fr.kata.sg_bank_account.model.TransactionType;
@@ -18,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,35 +60,32 @@ class TestOperationWithdrawalService {
         assertEquals(account, transactionCaptor.getValue().getAccount());
     }
 
-    // @Test
-    // void should_withdrawal_fail_when_not_enough_balance() throws AccountNotFoundException {
-    //     var userId = UUID.randomUUID();
-    //     var user = new User(userId, "John Doe");
-    //     var account = new Account(UUID.randomUUID(), user, 7);
-    //     when(accountService.getAccountByUserId(userId)).thenReturn(account);
-    //
-    //     assertThrows(WithdrawalNotEnoughBalanceException.class, () -> operationWithdrawalService.withdraw(user, 20));
-    // }
-    //
-    // @Test
-    // void should_withdrawal_fail_when_amount_less_than_threshold() {
-    //     var userId = UUID.randomUUID();
-    //     var user = new User(userId, "John Doe");
-    //     assertThrows(WithdrawalThresholdAmountException.class, () -> operationWithdrawalService.withdraw(user, 10));
-    // }
-    //
-    // @Test
-    // void should_withdrawal_fail_when_negative_amount() {
-    //     var userId = UUID.randomUUID();
-    //     var user = new User(userId, "John Doe");
-    //     assertThrows(WithdrawalNegativeAmountException.class, () -> operationWithdrawalService.withdraw(user, -50));
-    // }
-    //
-    // @Test
-    // void should_withdrawal_fail_when_user_has_no_account() throws AccountNotFoundException {
-    //     var userId = UUID.randomUUID();
-    //     var user = new User(userId, "John Doe");
-    //     when(accountService.getAccountByUserId(any(UUID.class))).thenThrow(AccountNotFoundException.class);
-    //     assertThrows(WithdrawalFailedException.class, () -> operationWithdrawalService.withdraw(user, 20));
-    // }
+    @Test
+    void should_withdrawal_fail_when_not_enough_balance() throws AccountNotFoundException {
+        var userId = UUID.randomUUID();
+        var user = new User(userId, "John Doe");
+        var account = new Account(UUID.randomUUID(), user, 7);
+        when(accountService.getAccountByUserId(userId)).thenReturn(account);
+
+        assertThrows(WithdrawalNotEnoughBalanceException.class, () -> operationWithdrawalService.execute(userId, 20));
+    }
+
+    @Test
+    void should_withdrawal_fail_when_amount_less_than_threshold() {
+        var userId = UUID.randomUUID();
+        assertThrows(WithdrawalThresholdAmountException.class, () -> operationWithdrawalService.execute(userId, 10));
+    }
+
+    @Test
+    void should_withdrawal_fail_when_negative_amount() {
+        var userId = UUID.randomUUID();
+        assertThrows(WithdrawalNegativeAmountException.class, () -> operationWithdrawalService.execute(userId, -50));
+    }
+
+    @Test
+    void should_withdrawal_fail_when_user_has_no_account() throws AccountNotFoundException {
+        var userId = UUID.randomUUID();
+        when(accountService.getAccountByUserId(any(UUID.class))).thenThrow(AccountNotFoundException.class);
+        assertThrows(AccountNotFoundException.class, () -> operationWithdrawalService.execute(userId, 20));
+    }
 }
