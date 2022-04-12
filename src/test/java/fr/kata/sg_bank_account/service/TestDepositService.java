@@ -1,6 +1,7 @@
 package fr.kata.sg_bank_account.service;
 
 import fr.kata.sg_bank_account.exception.AccountNotFoundException;
+import fr.kata.sg_bank_account.exception.DepositNegativeAmountException;
 import fr.kata.sg_bank_account.exception.OperationFailedException;
 import fr.kata.sg_bank_account.exception.UserNotFoundException;
 import fr.kata.sg_bank_account.model.Account;
@@ -60,6 +61,7 @@ class TestDepositService {
     void should_not_be_able_to_deposit_when_user_not_exists() throws UserNotFoundException {
         UUID userId = UUID.randomUUID();
         when(userService.getUser(any(UUID.class))).thenThrow(UserNotFoundException.class);
+
         assertThrows(UserNotFoundException.class, () -> depositService.execute(userId, 20));
     }
 
@@ -69,16 +71,18 @@ class TestDepositService {
         User user = new User(userId, "John Doe");
         when(userService.getUser(any(UUID.class))).thenReturn(user);
         when(accountService.getAccountByUserId(any(UUID.class))).thenThrow(AccountNotFoundException.class);
+
         assertThrows(AccountNotFoundException.class, () -> depositService.execute(userId, 20));
     }
 
-    // @Test
-    // void should_not_be_able_to_deposit_when_amount_negative() throws UserNotFoundException, AccountNotFoundException {
-    //     UUID userId = UUID.randomUUID();
-    //     User user = new User(userId, "John Doe");
-    //     when(userService.getUser(any(UUID.class))).thenReturn(user);
-    //     Account account = new Account(UUID.randomUUID(), user);
-    //     when(accountService.getAccountByUserId(any(UUID.class))).thenReturn(account);
-    //     assertFalse(depositService.prepareExecute(userId, -5));
-    // }
+    @Test
+    void should_not_be_able_to_deposit_when_amount_negative() throws UserNotFoundException, AccountNotFoundException {
+        UUID userId = UUID.randomUUID();
+        User user = new User(userId, "John Doe");
+        when(userService.getUser(any(UUID.class))).thenReturn(user);
+        Account account = new Account(UUID.randomUUID(), user);
+        when(accountService.getAccountByUserId(any(UUID.class))).thenReturn(account);
+
+        assertThrows(DepositNegativeAmountException.class, () -> depositService.execute(userId, -5));
+    }
 }
