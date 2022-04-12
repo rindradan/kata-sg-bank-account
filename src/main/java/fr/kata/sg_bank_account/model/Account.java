@@ -7,6 +7,11 @@ public class Account {
     private final User user;
     private double balance;
 
+    public Account(UUID id, User user) {
+        this.id = id;
+        this.user = user;
+    }
+
     public Account(UUID id, User user, double balance) {
         this.id = id;
         this.user = user;
