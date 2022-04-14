@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,7 +20,8 @@ class TestAccountTransactionService {
 
     @Test
     void should_create_account_transaction() {
-        AccountTransactionService accountTransactionService = new AccountTransactionServiceImpl();
+        var accountTransactions = new ArrayList<AccountTransaction>();
+        AccountTransactionService accountTransactionService = new AccountTransactionServiceImpl(accountTransactions);
         var user = new User(UUID.randomUUID(), "John Doe");
         var account = new Account(UUID.randomUUID(), user, 22);
         var accountTransaction = new AccountTransaction(new Date(), 10, TransactionType.DEPOSIT, account);
@@ -32,8 +35,8 @@ class TestAccountTransactionService {
 
     @Test
     void should_get_account_transaction_by_id() throws ParseException, AccountTransactionNotFoundException {
-        AccountTransactionService accountTransactionService = new AccountTransactionServiceImpl();
-        accountTransactionService.getAccountTransactions().addAll(TestAccountTransactionServiceData.generateAccountTransactions());
+        var accountTransactions = TestAccountTransactionServiceData.generateAccountTransactions();
+        AccountTransactionService accountTransactionService = new AccountTransactionServiceImpl(accountTransactions);
 
         var accountTransaction = accountTransactionService.getAccountTransactionById(UUID.fromString("844e5738-dcbb-4cff-960d-39fbe1101357"));
         assertNotNull(accountTransaction);
@@ -48,15 +51,15 @@ class TestAccountTransactionService {
 
     @Test
     void should_get_account_transaction_by_id_fail_when_not_found() {
-        AccountTransactionService accountTransactionService = new AccountTransactionServiceImpl();
+        AccountTransactionService accountTransactionService = new AccountTransactionServiceImpl(List.of());
         assertThrows(AccountTransactionNotFoundException.class,
             () -> accountTransactionService.getAccountTransactionById(UUID.fromString("844e5738-dcbb-4cff-960d-39fbe1101357")));
     }
 
     @Test
     void should_get_account_transaction_by_user_id() throws ParseException {
-        AccountTransactionService accountTransactionService = new AccountTransactionServiceImpl();
-        accountTransactionService.getAccountTransactions().addAll(TestAccountTransactionServiceData.generateAccountTransactions());
+        var initialAccountTransactions = TestAccountTransactionServiceData.generateAccountTransactions();
+        AccountTransactionService accountTransactionService = new AccountTransactionServiceImpl(initialAccountTransactions);
 
         var accountTransactions = accountTransactionService.getAccountTransactionByUserId(UUID.fromString("dd8d795c-b980-11ec-8422-0242ac120002"));
         assertFalse(accountTransactions.isEmpty());
