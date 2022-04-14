@@ -3,17 +3,15 @@ package fr.kata.sg_bank_account.service;
 import fr.kata.sg_bank_account.exception.AccountNotFoundException;
 import fr.kata.sg_bank_account.model.Account;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class AccountServiceImpl implements AccountService {
 
-    private final Map<UUID,Account> accountMap = new HashMap<>();
+    private final Map<UUID,Account> accountMap;
 
-    @Override
-    public Map<UUID, Account> getAccountMap() {
-        return accountMap;
+    public AccountServiceImpl(Map<UUID, Account> accountMap) {
+        this.accountMap = accountMap;
     }
 
     @Override
